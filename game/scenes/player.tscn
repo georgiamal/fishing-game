@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://rtbnh6stnx"]
 
 [ext_resource type="Texture2D" uid="uid://bvd8mpu3mwk3y" path="res://assets/16x16/16x16 Idle-Sheet.png" id="1_g2els"]
+[ext_resource type="Script" uid="uid://eedt0jd2d7lp" path="res://scripts/player.gd" id="1_qhqgy"]
 [ext_resource type="Texture2D" uid="uid://cijxwwfw73uhg" path="res://assets/16x16/16x16 Walk-Sheet.png" id="2_qhqgy"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
@@ -338,8 +339,9 @@ animations = [{
 
 [node name="player" type="CharacterBody2D" unique_id=537808465]
 scale = Vector2(4, 4)
+script = ExtResource("1_qhqgy")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=667389345]
 sprite_frames = SubResource("SpriteFrames_u8vuu")
-animation = &"idle_down"
+animation = &"walk_up"
 autoplay = "idle_down"
