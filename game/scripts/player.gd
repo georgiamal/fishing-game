@@ -25,7 +25,7 @@ func _physics_process(delta: float) -> void:
 	if is_moving:
 		var direction = (target_position - global_position).normalized()
 		var distance = global_position.distance_to(target_position)
-	
+		
 		if distance <= stop_distance:
 			is_moving = false
 			velocity = Vector2.ZERO
