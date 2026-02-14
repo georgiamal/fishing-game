@@ -133,13 +133,10 @@ func start_fishing():
 func catch_fish():
 	var fish_names = fish_data.fish_types.keys()
 	
-	# Pick a random one
+	# picks random fish
 	var random_fish = fish_names[randi() % fish_names.size()]
-
-	# Get that fish's info
-	var fish_info = fish_data.fish_types[random_fish]
 	
 	print("Caught a " + random_fish + "!")
-	
+	# TODO: add fish popup here?
 	# TODO: Add to inventory
 	transition_to(State.IDLE)
