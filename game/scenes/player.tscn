@@ -337,6 +337,10 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qhqgy"]
+radius = 5.0
+height = 14.5
+
 [node name="player" type="CharacterBody2D" unique_id=537808465]
 scale = Vector2(4, 4)
 script = ExtResource("1_qhqgy")
@@ -345,3 +349,7 @@ script = ExtResource("1_qhqgy")
 sprite_frames = SubResource("SpriteFrames_u8vuu")
 animation = &"walk_up"
 autoplay = "idle_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=714888016]
+position = Vector2(0, 2.75)
+shape = SubResource("CapsuleShape2D_qhqgy")
