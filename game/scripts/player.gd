@@ -1,12 +1,13 @@
 extends CharacterBody2D
 
+enum State { IDLE, WALKING, FISHING }
+var current_state = State.IDLE
+
 const SPEED = 300.0
 var target_position = Vector2.ZERO
-var is_moving = false
 var last_direction = "down"
 var stop_distance = 5.0
 var water_area
-var is_fishing = false
 var player_near_water = false
 
 @onready var sprite = $AnimatedSprite2D
@@ -17,40 +18,64 @@ func _ready() -> void:
 	water_area = get_node("../map/water")
 	
 func _input(event):
-#	for touch
-	if event is InputEventScreenTouch and event.pressed:
-		target_position = event.position
-		is_moving = true
-#	for mouse
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		target_position = get_global_mouse_position()
-		is_moving = true
-	elif event is InputEventKey and event.pressed and event.keycode == KEY_F:
-		try_fishing()
+#	wasd movement
+	if current_state == State.IDLE or current_state == State.FISHING:
+		if Input.is_action_just_pressed("ui_up") or Input.is_action_just_pressed("ui_down") or Input.is_action_just_pressed("ui_left") or Input.is_action_just_pressed("ui_right"):
+			transition_to(State.WALKING)
+
+		
+	if current_state == State.IDLE:
+		if Input.is_action_just_pressed("fishing"):
+			try_fishing()
 
 func _physics_process(delta: float) -> void:
-	if is_moving:
-		var direction = (target_position - global_position).normalized()
-		var distance = global_position.distance_to(target_position)
+	match current_state:
+		State.IDLE:
+			handle_idle_state()
+		State.WALKING:
+			handle_walking_state()
+		State.FISHING:
+			handle_fishing_state()
+
+func handle_idle_state():
+	velocity = Vector2.ZERO
+	
+func handle_walking_state():
+	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	if input_direction == Vector2.ZERO:
+		transition_to(State.IDLE)
+		return
 		
-		if distance <= stop_distance:
-			is_moving = false
+	var angle = rad_to_deg(input_direction.angle())
+	velocity = input_direction * SPEED
+	update_animation(angle)
+	move_and_slide()
+		
+
+func handle_fishing_state():
+	velocity = Vector2.ZERO
+	
+func transition_to(new_state: State):
+#	exit previous state
+	match current_state:
+		State.WALKING:
 			velocity = Vector2.ZERO
-#			keep direction when idle after movement
+		State.FISHING:
+#			TODO; cancel fishing here
+			pass
+	
+#	enter new state
+	current_state = new_state
+	
+	match new_state:
+		State.IDLE:
 			play_animation_for_direction(last_direction, "idle")
-		else:
-			var angle = rad_to_deg(direction.angle())
-			velocity = direction * SPEED
-			update_animation(angle)
-		
-		var previous_position = global_position
-		move_and_slide()
-		
-		if global_position.distance_to(previous_position) < 0.1:
-#			player is stuck
-			is_moving = false
-			velocity = Vector2.ZERO
-			play_animation_for_direction(last_direction, "idle")
+		State.WALKING:
+			pass
+		State.FISHING:
+#			TODO: add fishing animation here
+			pass
 
 func update_animation(angle: float):
 	var result = get_animation_from_angle(angle)
@@ -86,34 +111,23 @@ func play_animation_for_direction(direction, type):
 	var animation = type + "_" + direction
 	sprite.play(animation)
 
-func try_fishing():	
-	
-	if player_near_water:
-		#print("fishing")
-		start_fishing()
-	else:
-		print("too far")
-
-
 func _on_water_body_entered(body: Node2D) -> void:
 	if body.name == "player":
 		player_near_water = true
 		print("in range")
-
 
 func _on_water_body_exited(body: Node2D) -> void:
 	if body.name == "player":
 		player_near_water = false
 		print("out of range")
 
-func start_fishing():
-	is_fishing = true
-	is_moving = false
-	velocity = Vector2.ZERO
-#	TODO: add fishing animation here
+func try_fishing():	
+	if player_near_water:
+		start_fishing()	
 
+func start_fishing():
+	transition_to(State.FISHING)
 	await get_tree().create_timer(2.0).timeout
-	
 	catch_fish()
 
 func catch_fish():
@@ -126,9 +140,6 @@ func catch_fish():
 	var fish_info = fish_data.fish_types[random_fish]
 	
 	print("Caught a " + random_fish + "!")
-	print("Rarity: " + str(fish_info["rarity"]))
-	print("Value: " + str(fish_info["value"]))
 	
 	# TODO: Add to inventory
-	is_fishing = false
-	play_animation_for_direction(last_direction, "idle")
+	transition_to(State.IDLE)
