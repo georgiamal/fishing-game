@@ -131,7 +131,6 @@ func start_fishing():
 	fishing_timer = get_tree().create_timer(2.0)
 	await fishing_timer.timeout
 	
-#	do i need to add if statement here for cancelling?? TODO
 	if fishing_timer != null and current_state == State.FISHING:
 		catch_fish()
 		
