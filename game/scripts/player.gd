@@ -9,6 +9,7 @@ var last_direction = "down"
 var stop_distance = 5.0
 var water_area
 var player_near_water = false
+var fishing_timer = null
 
 @onready var sprite = $AnimatedSprite2D
 @onready var fish_data = preload("res://scenes/fish/fish_data.gd").new()
@@ -63,7 +64,7 @@ func transition_to(new_state: State):
 			velocity = Vector2.ZERO
 		State.FISHING:
 #			TODO; cancel fishing here
-			pass
+			stop_fishing()
 	
 #	enter new state
 	current_state = new_state
@@ -127,8 +128,18 @@ func try_fishing():
 
 func start_fishing():
 	transition_to(State.FISHING)
-	await get_tree().create_timer(2.0).timeout
-	catch_fish()
+	fishing_timer = get_tree().create_timer(2.0)
+	await fishing_timer.timeout
+	
+#	do i need to add if statement here for cancelling?? TODO
+	if fishing_timer != null and current_state == State.FISHING:
+		catch_fish()
+		
+	fishing_timer = null
+
+func stop_fishing():
+	fishing_timer = null
+	print("fishing cancelled!")
 
 func catch_fish():
 	var caught_fish = fish_data.get_random_fish()

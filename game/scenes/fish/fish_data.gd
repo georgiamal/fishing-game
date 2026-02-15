@@ -7,14 +7,6 @@ var all_fish = [
 	Fish.new("Goldfish", 1, 5, 38, 0, "res://assets/fish/Goldfish.png"),
 	Fish.new("Rainbow Trout", 1, 10, 75, 0, "res://assets/fish/Rainbow Trout.png")
 ]
-#
-## Called when the node enters the scene tree for the first time.
-#func _ready():
-	#all_fish.append(Fish.new("Angelfish", 1, 5, 10, 0, "res://assets/fish/Angelfish.png"))
-	#all_fish.append(Fish.new("Bass", 1, 10, 75, 0, "res://assets/fish/Bass.png"))
-	#all_fish.append(Fish.new("Catfish", 1, 25, 130, 0, "res://assets/fish/Catfish.png"))
-	#all_fish.append(Fish.new("Goldfish", 1, 5, 38, 0, "res://assets/fish/Goldfish.png"))
-	#all_fish.append(Fish.new("Rainbow Trout", 1, 10, 75, 0, "res://assets/fish/Rainbow Trout.png"))
 
 func get_random_fish() -> Fish:
 	return all_fish[randi() % all_fish.size()]
