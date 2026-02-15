@@ -131,12 +131,22 @@ func start_fishing():
 	catch_fish()
 
 func catch_fish():
-	var fish_names = fish_data.fish_types.keys()
+	var caught_fish = fish_data.get_random_fish()
 	
-	# picks random fish
-	var random_fish = fish_names[randi() % fish_names.size()]
-	
-	print("Caught a " + random_fish + "!")
-	# TODO: add fish popup here?
+	print("Caught a " + caught_fish.name + "!")
+	show_caught_fish(caught_fish)
 	# TODO: Add to inventory
 	transition_to(State.IDLE)
+
+func show_caught_fish(fish: Fish):
+	var fish_sprite = Sprite2D.new()
+	fish_sprite.texture = load(fish.sprite_path)
+	fish_sprite.position = global_position + Vector2(0, -50)
+	get_tree().root.add_child(fish_sprite)
+	
+	var tween = create_tween()
+	tween.tween_property(fish_sprite, "scale", Vector2(2, 2), 0.4)
+	tween.tween_property(fish_sprite, "modulate:a", 0.0, 0.4)
+
+	await tween.finished
+	fish_sprite.queue_free()
