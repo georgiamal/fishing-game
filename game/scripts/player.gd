@@ -63,7 +63,6 @@ func transition_to(new_state: State):
 		State.WALKING:
 			velocity = Vector2.ZERO
 		State.FISHING:
-#			TODO; cancel fishing here
 			stop_fishing()
 	
 #	enter new state
@@ -138,7 +137,6 @@ func start_fishing():
 
 func stop_fishing():
 	fishing_timer = null
-	print("fishing cancelled!")
 
 func catch_fish():
 	var caught_fish = fish_data.get_random_fish()
